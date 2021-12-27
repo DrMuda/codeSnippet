@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<title>黑客帝国文字雨特效</title>
+<meta charset="gbk" >
+
+<body>
+    <div id="container">
+        <canvas id="canvas" onclick="pauseResume()">
+        </canvas>
+    </div>
+    <script>
+        let timer = null
+        let canvasWidth = window.innerWidth
+        let canvasHeight = window.innerHeight
+        const blockSize = 16
+        const fontSize = "18px"
+        const speed = 50 // 下落速度，每50ms下落一个
+        let colCount = Math.floor(canvasWidth / blockSize)
+        let rowCount = Math.floor(canvasHeight / blockSize)
+        let textPositionListGroup = []
+        // 两组文字雨， 仅记录文字出现的纵向位置， 它们的index则作为横向位置
+        textPositionListGroup.push(new Array(colCount).fill(1).map(() => {
+            return Math.floor(Math.random() * rowCount) - rowCount * 2
+        }))
+        textPositionListGroup.push(new Array(colCount).fill(1).map(() => {
+            return Math.floor(Math.random() * rowCount) - rowCount
+        }))
+        window.onload = start
+        window.onclose = () => {
+            timer && clearInterval(timer)
+        }
+        // 窗口大小发生变化后重置一些参数
+        window.onresize = () => {
+            pauseResume()
+            canvasWidth = window.innerWidth
+            canvasHeight = window.innerHeight
+
+            colCount = Math.floor(canvasWidth / blockSize)
+            rowCount = Math.floor(canvasHeight / blockSize)
+            const canvas = document.getElementById("canvas")
+            canvas.setAttribute("height", canvasHeight)
+            canvas.setAttribute("width", canvasWidth)
+            ctx.fillStyle = "#000"
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+            textPositionListGroup = []
+            textPositionListGroup.push(new Array(colCount).fill(1).map(() => {
+                return Math.floor(Math.random() * rowCount) - rowCount * 2
+            }))
+            textPositionListGroup.push(new Array(colCount).fill(1).map(() => {
+                return Math.floor(Math.random() * rowCount) - rowCount
+            }))
+            pauseResume()
+        }
+        function start() {
+            // 初始化画布为黑色背景
+            const canvas = document.getElementById("canvas")
+            canvas.setAttribute("height", canvasHeight)
+            canvas.setAttribute("width", canvasWidth)
+            window.ctx = canvas.getContext("2d")
+            ctx.fillStyle = "#000"
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+
+            // 开始下落文字雨
+            timer = setInterval(() => {
+                // 将上一帧的画布用一个黑色透明矩形遮罩起来， 形成拖尾效果
+                drawMask()
+                // 绘制文字
+                drawText()
+                // 然后下落一个位置
+                textPositionListAddOne()
+            }, speed)
+        }
+        // 绘制文字
+        function drawText() {
+            ctx.font = `${fontSize} Consolas`
+            textPositionListGroup.forEach((textPositionList) => {
+                textPositionList.forEach((number, index) => {
+                    if (number >= 0) {
+                        // 随机生成文字的ASCII码
+                        const charCode = Math.floor(Math.random() * (126 - 33) + 33) // 所有可打印文字
+                        // const charCode = Math.random() > 0.5 ? 48 : 49 // 0或1
+                        ctx.fillStyle = "#000"
+                        // 把原来的拖尾清除掉，不然来不及消失的文字和新的重合在一起，看起来很混乱
+                        ctx.fillRect(index * blockSize, number * blockSize, blockSize, blockSize)
+                        ctx.fillStyle = "#0f0"
+                        ctx.fillText(String.fromCharCode(charCode), index * blockSize, (number + 1) * blockSize)
+                    }
+                })
+            })
+        }
+        // 绘制黑色透明遮罩
+        function drawMask() {
+            // 遮住上一帧的画布， 上一帧的文字就会逐渐消失
+            ctx.fillStyle = "rgba(0,0,0,0.05)"
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+        }
+        function textPositionListAddOne() {
+            // 位置逐个加1， 直到超出行数， 重回顶部
+            textPositionListGroup = textPositionListGroup.map((textPositionList, index1) => {
+                return textPositionList.map((number, index2) => {
+                    if (number + 1 > rowCount) {
+                        return Math.floor(Math.random() * rowCount) - rowCount
+                    }
+                    return number + 1
+                })
+            })
+        }
+
+        function pauseResume() {
+            if (timer) {
+                clearInterval(timer)
+                timer = null
+            } else {
+                timer = setInterval(() => {
+                    drawText()
+                    textPositionListAddOne()
+                    drawMask()
+                }, speed)
+            }
+        }
+
+    </script>
+    <style>
+        body {
+            height: 100vh;
+            width: 100vw;
+            padding: 0;
+            border: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</body>
+
+</html>

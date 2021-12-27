@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+
+<head></head>
+
+<body>
+    <div id="main">
+        <div class="login">
+            <h2 class="title">登录</h2>
+            <div class="tell-number row">
+                <svg t="1636074532244" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" p-id="2444" xmlns:xlink="http://www.w3.org/1999/xlink"
+                    width="200" height="200">
+                    <defs>
+                        <style type="text/css"></style>
+                    </defs>
+                    <path
+                        d="M1019.852028 961.510784c0 0.041956 0.021489 0.083911 0.021489 0.124843 0 26.28669-16.018835 37.032428-42.307571 37.032428L46.432007 998.668055c-26.287713 0-42.305525-10.746762-42.305525-37.032428 0-0.040932 0.021489-0.082888 0.021489-0.124843l-0.040932 0c0 0 0-173.511799 126.785591-236.585323 80.205717-39.927361 49.330522-7.523347 147.804301-48.360428 98.492198-40.793078 121.82665-55.053873 121.82665-55.053873l0.910743-93.991698c0 0-36.869722-28.228925-48.337915-116.681466-23.084765 6.653537-30.711466-27.114544-32.054043-48.607044-1.238201-20.748556-13.369495-85.640496 14.798031-79.771835-5.768377-43.316551-9.900487-82.376149-7.873318-103.083773 7.067976-72.621994 77.022211-148.507312 184.774307-154.045445C639.509581 30.828123 689.729355 106.714464 696.754353 179.335435c2.068102 20.707624-2.457981 59.767222-8.224312 103.000885 28.166503-5.745864 15.930831 59.023278 14.548344 79.771835-1.239224 21.493523-9.029654 55.137785-32.051997 48.482201-11.510148 88.493473-48.40136 116.474758-48.40136 116.474758l0.867764 93.53428c0 0 23.334451 13.307074 121.809253 54.105269 98.493222 40.835034 67.598584 10.293437 147.823744 50.218752 126.766149 63.075571 126.766149 236.585323 126.766149 236.585323L1019.852028 961.510784 1019.852028 961.510784z"
+                        p-id="2445"></path>
+                </svg>
+                <input class="input form-item" name="tellNumber" placeholder="输入手机号" onchange="onChange()" />
+            </div>
+            <div class="verify-code row">
+                <svg t="1636074794626" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" p-id="3275" width="200" height="200">
+                    <path
+                        d="M817.4 957.5H207.2c-19.1 0-34.5-15.5-34.5-34.5V485.4c0-19.1 15.5-34.5 34.5-34.5h24.2V375c-0.7-8.4-1.2-16.8-1.2-25.4 0-155.8 126.3-282.1 282.1-282.1s282.1 126.3 282.1 282.1v101.3h23c19.1 0 34.5 15.5 34.5 34.5v437.5c0.1 19.1-15.4 34.6-34.5 34.6zM495.1 730.9v79.2h34.5v-79.2c33-7.8 57.6-37.4 57.6-72.8 0-41.3-33.5-74.8-74.8-74.8s-74.8 33.5-74.8 74.8c-0.1 35.4 24.5 65 57.5 72.8z m224.5-379v-2.3c0-114.5-92.8-207.2-207.2-207.2s-207.2 92.8-207.2 207.2v101.3h414.5v-99z"
+                        fill="" p-id="3276"></path>
+                </svg>
+                <input class="input form-item" name='code' placeholder="输入短信验证码" onchange="onChange()" />
+                <span class="get-code-btn" onclick="getCode()">获取验证码</span>
+            </div>
+            <div class="tips">
+                <!-- 验证出错提示 -->
+            </div>
+            <div class='other'>
+                <span class="save-number">
+                    <input class="remember-user" type="checkbox" onchange="onCheckBoxChange(this)" />
+                    <span>记住账号</span>
+                </span>
+                <a class="forget-password" href="#">忘记密码</a>
+            </div>
+            <input class='login-btn' type="button" value="登录" onclick="login()" />
+        </div>
+    </div>
+</body>
+
+<script>
+
+    window.onload = () => {
+        document.getElementsByClassName("remember-user")[0].checked = localStorage.getItem("saveUser") === "true" ? true : false
+        document.querySelector(".form-item[name=tellNumber]").value = localStorage.getItem("tellNumber") || ""
+    }
+
+    // 点击获取验证码
+    function getCode() {
+        let count = 60
+        const btnEle = document.getElementsByClassName("get-code-btn")[0]
+        const className = btnEle.className
+        if (!className.includes("disabled")) {
+            setDisabled()
+            let timer = setInterval(() => {
+                count -= 1
+                if (count !== 0) {
+                    setDisabled()
+                } else {
+                    removeDisabled()
+                }
+            }, 1000)
+        } else {
+            // 在此处调用获取验证码的接口
+        }
+        function setDisabled() {
+            // 设置为禁用
+            btnEle.setAttribute("class", `${className} a-disabled`)
+            btnEle.setAttribute("disabled", true)
+            btnEle.innerHTML = `${count}s`
+        }
+        function removeDisabled() {
+            // 移除禁用
+            btnEle.setAttribute("class", `${className}`)
+            btnEle.removeAttribute("disabled")
+            btnEle.innerHTML = `获取验证码`
+            clearInterval(timer)
+            timer = null
+        }
+    }
+
+    // 登录操作
+    async function login() {
+        const btnEle = document.getElementsByClassName("login-btn")[0]
+        const className = btnEle.className
+        if (!className.includes("disabled")) {
+            setDisabled()
+            const errorList = []
+            const formItem = document.getElementsByClassName("form-item")
+            const tipsEle = document.getElementsByClassName("tips")[0]
+            const fieldsValue = {}
+            for (let i = 0; i < formItem.length; i += 1) {
+                const item = formItem[i]
+                const name = item.getAttribute("name")
+                const value = item.value
+                if (name === "tellNumber") {
+                    errorList.push(...verifyTellNumber(value))
+                }
+                if (name === "code") {
+                    errorList.push(...verifyCode(value))
+                }
+                fieldsValue[name] = value
+            }
+            if (errorList.length > 0) {
+                tipsEle.innerHTML = errorList.join(" ")
+                removeDisabled()
+            } else {
+                tipsEle.innerHTML = ""
+                // 在此处调用登录验证的接口
+                // 如果验证出错，使用tipsEle.innerHTML = ""增加错误提示
+
+                // 验证通过后调用 removeDisabled() 移除禁用样式或跳转页面
+                setTimeout(() => {
+                    // 假设两秒后登录验证通过
+                    if (localStorage.getItem("saveUser") === "true") {
+                        localStorage.setItem("tellNumber", fieldsValue.tellNumber)
+                    } else {
+                        localStorage.removeItem("tellNumber")
+                    }
+                    removeDisabled()
+                }, 2000)
+            }
+        }
+        function setDisabled() {
+            // 设置为禁用
+            btnEle.setAttribute("class", `${className} btn-disabled`)
+            btnEle.setAttribute("disabled", true)
+            btnEle.setAttribute("value", "登录中...")
+        }
+        function removeDisabled() {
+            // 移除禁用
+            btnEle.setAttribute("class", `${className}`)
+            btnEle.removeAttribute("disabled")
+            btnEle.setAttribute("value", "登录")
+        }
+    }
+
+    // 当输入框的值发生变化
+    function onChange() {
+        const errorList = []
+        const formItem = document.getElementsByClassName("form-item")
+        const tipsEle = document.getElementsByClassName("tips")[0]
+
+        errorList.push(...verifyTellNumber(formItem[0].value))
+        errorList.push(...verifyCode(formItem[1].value))
+        tipsEle.innerHTML = errorList.join(" ")
+    }
+
+    function onCheckBoxChange(element) {
+        localStorage.setItem("saveUser", element.checked)
+    }
+
+    // 验证手机号码
+    function verifyTellNumber(value) {
+        let errorList = []
+        if (typeof value !== "string") {
+            errorList.push("请输入电话号码")
+        } else {
+            if (value.replace(/(^\s*)|(\s*$)/g, "") === "") {
+                errorList.push("不能为空或纯空格")
+            } else {
+                if (!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(value))) {
+                    errorList.push("不是正确的手机号码")
+                }
+            }
+        }
+        const ele = document.querySelector(".form-item[name=tellNumber]")
+        if (errorList.length > 0) {
+            ele.parentElement.setAttribute("class", `tell-number row form-item-error`)
+        } else {
+            ele.parentElement.setAttribute("class", `tell-number row`)
+        }
+        return errorList
+    }
+
+    // 初步验证 验证码，不包含后台验证
+    function verifyCode(value) {
+        let errorList = []
+        if (typeof value !== "string") {
+            errorList.push("请输入验证码")
+        } else {
+            if (value.length !== 6) {
+                errorList.push("请输入6位数验证码")
+            }
+        }
+        const ele1 = document.querySelector(".form-item[name=code]")
+        // 从第二个输入框开始，都是border-top:0,所以还需要修改上一个框的下边
+        const ele2 = document.querySelector(".form-item[name=tellNumber]")
+        if (errorList.length > 0) {
+            ele1.parentElement.setAttribute("class", `verify-code row form-item-error`)
+            ele2.parentElement.setAttribute("style", "border-bottom: 1px red solid;")
+        } else {
+            ele1.parentElement.setAttribute("class", `verify-code row`)
+            ele2.parentElement.setAttribute("style", "")
+        }
+        return errorList
+    }
+
+</script>
+
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    #main {
+        width: 100vw;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background-color: rgb(71, 71, 71);
+    }
+
+    .login {
+        width: 500px;
+        height: 380px;
+        padding: 32px 40px;
+        background-color: white;
+        margin-right: 16px;
+        box-sizing: border-box;
+        border-radius: 4px;
+    }
+
+    .login * {
+        border-color: #a0a0a0;
+    }
+
+    .title {
+        color: #a0a0a0;
+    }
+
+    .row {
+        border-width: 1px;
+        border-style: solid;
+        height: 50px;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 18px;
+    }
+
+    .row .icon {
+        height: 20px;
+        width: 20px;
+        margin: 0px 20px;
+        fill: #a0a0a0;
+        flex-shrink: 0;
+        flex-grow: 0;
+        font-size: inherit;
+    }
+
+    .row .input {
+        height: 80%;
+        flex-grow: 1;
+        flex-shrink: 1;
+        border: 0;
+        outline: 0;
+        font-size: inherit;
+    }
+
+    .row .get-code-btn {
+        color: #1890ff;
+        text-decoration: none;
+        font-size: inherit;
+        padding-right: 8px;
+        cursor: pointer;
+    }
+
+    .tell-number {
+        border-radius: 4px 4px 0 0;
+    }
+
+    .verify-code {
+        border-radius: 0 0 4px 4px;
+        border-top: 0;
+    }
+
+    .tips {
+        color: red;
+        height: 16px;
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .other {
+        height: 26px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
+        font-size: 14px;
+        padding-bottom: 12px;
+    }
+
+    .other .save-number {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .other .save-number input {
+        border-width: 1px;
+        border-style: solid;
+        height: 18px;
+        width: 18px;
+        margin-left: 0;
+        color: #9b9b9b;
+        cursor: pointer;
+    }
+
+    .other .save-number input:checked {
+        background-color: #1890ff;
+        border: #1890ff;
+    }
+
+    .other .forget-password {
+        color: #1890ff;
+        text-decoration: none;
+        padding-right: 8px;
+    }
+
+    .login-btn {
+        border: 0;
+        background-color: #1890ff;
+        height: 40px;
+        width: 150px;
+        color: white;
+        overflow: hidden;
+        border-radius: 4px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .form-item-error {
+        border-color: red;
+        transition: 0.2s;
+    }
+
+    .btn-disabled {
+        background-color: #9b9b9b !important;
+        cursor: not-allowed !important;
+    }
+
+    .a-disabled {
+        color: #9b9b9b !important;
+        cursor: not-allowed !important;
+    }
+</style>
+
+</html>

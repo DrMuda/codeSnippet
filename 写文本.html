@@ -1,0 +1,52 @@
+<!--
+ * @Author: 赖学鑫
+ * @Date: 2021-07-13 15:35:20
+ * @LastEditTime: 2021-07-13 15:38:47
+ * @LastEditors: 赖学鑫
+ * @Description: 
+ * @FilePath: \iotp_webd:\个人\Projects\test\写文本.html
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>读写文本</title>
+    </head>
+    <body id="main">
+        <input type="file" id="input" onChange="onChange()" />
+    </body>
+    <script>
+        function onChange() {
+            const file = document.getElementById("input").files[0];
+            const fr = new FileReader();
+            const reg = /第.*章.*\s/g;
+            const num = 150;
+            fr.readAsText(file, "utf-8");
+            fr.onloadend = async () => {
+                const chapterNameList = fr.result.match(reg);
+                const chapterList = fr.result.split(reg);
+                chapterList.shift();
+                const chapterList2 = [];
+                let temp = "";
+                for (let i = 0; i < chapterList.length; i += 1) {
+                    temp += `### ${chapterNameList[i]}<br />`;
+                    temp += chapterList[i];
+                    if (i % num === 0 && i !== 0) {
+                        chapterList2.push(temp);
+                        temp = "";
+                    }
+                }
+                chapterList2.push(temp);
+                let index = 10;
+                for (; index < 10 || index < chapterList2.length; index += 1) {
+                    const chapter = chapterList2[index];
+                    let a = document.createElement("a");
+                    a.href = URL.createObjectURL(new Blob([chapter]));
+                    a.download = `${index * num + 1}到${(index + 1) * num}章节`;
+                    document.getElementById("main").appendChild(a);
+                    a.click();
+                    a.remove();
+                }
+            };
+        }
+    </script>
+</html>

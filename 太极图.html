@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html>
+
+<body>
+    <div id="main"></div>
+    <style>
+        body {
+            background-color: bisque;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #main {
+            height: 200px;
+            width: 200px;
+            box-sizing: border-box;
+            border-width: 100px 0 100px 0;
+            border-style: solid;
+            border-radius: 50%;
+            border-top-color: black;
+            border-bottom-color: white;
+            transition: 1s;
+            animation: myrotate 1s linear infinite;
+        }
+
+        #main::before {
+            display: inline-block;
+            content: "";
+            position: relative;
+            height: 100px;
+            width: 100px;
+            box-sizing: border-box;
+            background-color: black;
+            border: 40px solid white;
+            border-radius: 50%;
+            top: -50px;
+            z-index: 1;
+        }
+
+        #main::after {
+            display: inline-block;
+            content: "";
+            position: relative;
+            height: 100px;
+            width: 100px;
+            box-sizing: border-box;
+            background-color: white;
+            border: 40px solid black;
+            border-radius: 50%;
+            top: -50px;
+            z-index: 1;
+        }
+
+        @keyframes myrotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            50% {
+                transform: rotate(180deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</body>
+
+</html>
