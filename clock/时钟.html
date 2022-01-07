@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<title>时钟</title>
+<meta charset="utf-8">
+
+<body>
+    <div class="container">
+        <div class="border"></div>
+        <div class="center-point"></div>
+        <div class="h hand"></div>
+        <div class="m hand"></div>
+        <div class="s hand"></div>
+    </div>
+</body>
+<script>
+    timer1 = null
+    timer2 = null
+    window.onload = () => {
+        setTime()
+        appendNumber()
+        timer1 = setTimeout(() => {
+            timer2 = setInterval(() => {
+                setTime()
+            }, 100)
+            clearInterval(timer1)
+        }, new Date().getTime() % 1000)
+    }
+    window.onended = () => { timer2 && clearInterval(timer2) }
+    function setTime(h = new Date().getHours(), m = new Date().getMinutes(), s = new Date().getSeconds()) {
+        const hHand = document.getElementsByClassName("h")[0]
+        const mHand = document.getElementsByClassName("m")[0]
+        const sHand = document.getElementsByClassName("s")[0]
+        hHand.style.transform = `rotate(${360 * 2 * ((h * 60 * 60 + m * 60 + s) / 86400) - 180}deg)`
+        mHand.style.transform = `rotate(${360 * ((m * 60 + s) / 3600) - 180}deg)`
+        sHand.style.transform = `rotate(${360 * (s / 60) - 180}deg)`
+    }
+    function appendNumber() {
+        const r = (200 - 40) / 2
+        const container = document.getElementsByClassName("container")[0]
+        for (let i = 1; i <= 12; i++) {
+            const span = document.createElement('span')
+            span.className = "number"
+            span.innerText = i
+            const angel = i / 12 * 360
+            const x = Math.sin(angel * (Math.PI / 180)) * r
+            const y = -Math.cos(angel * (Math.PI / 180)) * r
+            span.style.left = `${x + 100 - 10}px`
+            span.style.top = `${y + 100 - 10}px`
+            container.appendChild(span)
+        }
+    }
+</script>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: antiquewhite;
+    }
+
+    .container {
+        position: relative;
+    }
+
+    .border {
+        box-sizing: border-box;
+        height: 200px;
+        width: 200px;
+        border: 10px solid white;
+        border-radius: 50%;
+        box-shadow: 0 0 5px#898989, inset 0 0 5px#898989;
+    }
+
+    .center-point {
+        box-sizing: border-box;
+        position: absolute;
+        height: 12px;
+        width: 12px;
+        border-radius: 50%;
+        left: calc(100px - 6px);
+        top: calc(100px - 6px);
+        background-color: white;
+        z-index: 1;
+        box-shadow: 0 0 5px #898989;
+    }
+
+    .hand {
+        box-sizing: border-box;
+        position: absolute;
+        background-color: white;
+        box-shadow: 0 0 5px #898989;
+    }
+
+    .h {
+        width: 8px;
+        height: 50px;
+        border-radius: 8px;
+        left: calc(100px - 4px);
+        top: calc(100px - 4px);
+        transform-origin: 4px 4px;
+    }
+
+    .m {
+        width: 4px;
+        height: 60px;
+        border-radius: 4px;
+        left: calc(100px - 2px);
+        top: calc(100px - 2px);
+        transform-origin: 2px 2px;
+    }
+
+    .s {
+        width: 2px;
+        height: 70px;
+        border-radius: 2px;
+        left: calc(100px - 1px);
+        top: calc(100px - 1px);
+        transform-origin: 1px 1px;
+    }
+
+    .number {
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        font-size: 16px;
+        position: absolute;
+        color: #b9b9b9;
+    }
+</style>
+
+</html>
